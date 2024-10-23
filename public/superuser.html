@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Kelola Pengguna</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #ff1919;
+      color: white;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .button {
+      background-color: #ff1919;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      display: inline-block;
+      margin: 10px 0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #e60000;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    select, input[type="text"], input[type="password"] {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    #user-form {
+      display: none;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      padding: 20px;
+      background-color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Kelola Pengguna</h1>
+
+
+    <div id="user-form">
+      <h2 id="form-title">Tambah Pengguna</h2>
+      <input type="hidden" id="editUserId">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Masukkan Username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Masukkan Password" required>
+      </div>
+      <div class="form-group">
+        <label for="position">Jabatan:</label>
+        <input type="text" id="position" placeholder="Masukkan Jabatan" required>
+      </div>
+      <button class="button" onclick="submitUser()">Simpan</button>
+      <button class="button" onclick="cancelForm()">Batal</button>
+    </div>
+
+   
+    <table id="user-table">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Jabatan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data pengguna akan ditampilkan dengan JavaScript -->
+      </tbody>
+    </table>
+
+    <button class="button" onclick="showAddUserForm()">Tambah Pengguna Baru</button>
+    <button class="button" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    let users = [];
+
+    function showAddUserForm() {
+      document.getElementById('user-form').style.display = 'block';
+      document.getElementById('form-title').textContent = 'Tambah Pengguna';
+      document.getElementById('editUserId').value = '';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('position').value = '';
+    }
+
+    function cancelForm() {
+      document.getElementById('user-form').style.display = 'none';
+    }
+
+    function renderUsers() {
+      const tableBody = document.querySelector('#user-table tbody');
+      const rows = users.map((user, index) => {
+        return `<tr>
+                  <td>${user.username}</td>
+                  <td>${user.position}</td>
+                  <td>
+                    <button onclick="editUser(${index})">Edit</button>
+                    <button onclick="deleteUser(${index})">Hapus</button>
+                  </td>
+                </tr>`;
+      }).join('');
+      tableBody.innerHTML = rows;
+    }
+
+    function loadUsers() {
+      fetch('/users')
+        .then(response => response.json())
+        .then(data => {
+          users = data;
+          renderUsers();
+        })
+        .catch(error => console.error('Error loading users:', error));
+    }
+
+    function submitUser() {
+      const editUserId = document.getElementById('editUserId').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const position = document.getElementById('position').value;
+
+      if (editUserId) {
+        fetch(`/users/${users[editUserId]._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, position })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          loadUsers();
+          cancelForm();
+        })
+        .catch(error => console.error('Error updating user:', error));
+      } else {
+        fetch('/users', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password, position })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          loadUsers();
+          cancelForm();
+        })
+        .catch(error => console.error('Error adding user:', error));
+      }
+    }
+
+    function editUser(index) {
+      const user = users[index];
+      document.getElementById('editUserId').value = index;
+      document.getElementById('username').value = user.username;
+      document.getElementById('password').value = '';
+      document.getElementById('position').value = user.position;
+
+      document.getElementById('user-form').style.display = 'block';
+      document.getElementById('form-title').textContent = 'Edit Pengguna';
+    }
+
+    function deleteUser(index) {
+      if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
+        fetch(`/users/${users[index]._id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(data.message);
+          loadUsers();
+        })
+        .catch(error => console.error('Error deleting user:', error));
+      }
+    }
+
+    function logout() {
+      window.location.href = '/logout';
+    }
+
+    window.onload = loadUsers;
+  </script>
+</body>
+</html>

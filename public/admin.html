@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Data Absensi</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #ff1919;
+      color: white;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .button {
+      background-color: #ff1919;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      display: inline-block;
+      margin: 10px 0;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #ff1919;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    select, input[type="date"] {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Data Absensi</h1>
+
+ 
+    <div class="form-group">
+      <label for="month">Bulan:</label>
+      <select id="month">
+
+      </select>
+      <label for="year">Tahun:</label>
+      <select id="year">
+
+      </select>
+      <button class="button" onclick="filterData()">Filter</button>
+    </div>
+
+    <table id="absensi-table">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Jabatan</th>
+          <th>Tanggal</th>
+          <th>Waktu</th>
+          <th>Jenis Absen</th>
+        </tr>
+      </thead>
+      <tbody>
+     
+      </tbody>
+    </table>
+
+    <button class="button" onclick="downloadCSV()">Unduh CSV</button>
+    <button class="button" onclick="logout()">Logout</button>
+  </div>
+  <script>
+    const months = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+  
+    const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i);
+  
+   
+    const monthSelect = document.getElementById('month');
+    const yearSelect = document.getElementById('year');
+  
+    months.forEach((month, index) => {
+      const option = document.createElement('option');
+      option.value = index + 1;
+      option.textContent = month;
+      monthSelect.appendChild(option);
+    });
+  
+    years.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      yearSelect.appendChild(option);
+    });
+  
+    function filterData() {
+  
+      const month = document.getElementById('month').value;
+      const year = document.getElementById('year').value;
+  
+  
+      fetch(`https://script.google.com/macros/s/AKfycbzPwgRSE2JeJkRZbWuMdjS7jkQ7cNhTyEBMHSGTkBi7meNr5Urgr6rNaq80TV5coH4ySw/exec?month=${month}&year=${year}`) // Ganti dengan URL dari Apps Script Anda
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.querySelector('#absensi-table tbody');
+          const rows = data.map(row => {
+            return `<tr>
+                      <td>${row.nama}</td>
+                      <td>${row.jabatan}</td>
+                      <td>${row.tanggal}</td>
+                      <td>${row.waktu}</td>
+                      <td>${row.absenType}</td>
+                    </tr>`;
+          }).join('');
+          tableBody.innerHTML = rows;
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    }
+  
+    function downloadCSV() {
+      const table = document.getElementById('absensi-table');
+      let csvContent = "data:text/csv;charset=utf-8,";
+  
+    
+      const headers = Array.from(table.querySelectorAll('thead th'))
+        .map(th => th.textContent)
+        .join(',');
+      csvContent += headers + '\r\n';
+  
+      const rows = Array.from(table.querySelectorAll('tbody tr'));
+      rows.forEach(row => {
+        const cells = Array.from(row.querySelectorAll('td'))
+          .map(td => td.textContent)
+          .join(',');
+        csvContent += cells + '\r\n';
+      });
+  
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', 'data_absensi.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  
+    function logout() {
+      window.location.href = '/logout'; 
+    }
+  
+  
+    filterData();
+  </script>
+  
+  
+</body>
+</html>

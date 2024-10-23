@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- <meta http-equiv="refresh" content="1"> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Karyawan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet'>
+    <link rel="stylesheet" href="css/presencing.css">
+</head>
+<body>
+    <div class="topbar" id="topbar">
+        <div class="logo">
+            <button class="openbtn" onclick="toggleNav()">☰</button>
+            <span class="title">PT HORESTCO</span>
+        </div>
+        <div class="search-icon">
+            <img src="https://img.icons8.com/ffffff/search.png" alt="Search Icon" onclick="toggleSearchBar()">
+        </div>
+    </div>
+
+    <div id="mySidebar" class="sidebar">
+        <button class="openbtnonsidebar" onclick="toggleNav()">✖</button>
+        <a href="/home">Home</a> 
+        <a href="/training">HR Departement</a>
+        <a href="/logins-consultation-office">Logins & Consultation Office</a>
+        <a href="/report-daily">Report Daily</a>
+        <a href="/rd">R&D</a>
+        <a href="/sales-tools-resources">Sales Tools & Resources</a>
+        <a href="/social-media-marketing-newsletter-management">Social Media Marketing & Newsletter Management</a>
+        <a href="/material-specifications-and-catalogues">Material Specifications and Catalogues</a>
+        <a href="/supplier-price-list">Supplier price list</a>
+        <a href="/complain-sugestions">Complain & Sugestions</a>
+        <a href="presencing.html">Attendance</a>
+        <a href="profil.html">Profile</a>
+    </div>
+
+    <header>
+        <h1>Absensi Karyawan</h1>
+    </header>
+
+    <div class="content">
+        <p><strong></strong> <span id="display-nama" class="input-box">danang punk</span></p>
+        <p><strong></strong> <span id="display-jabatan" class="input-box">it</span></p>
+
+
+        <!-- Absensi Form -->
+        <form id="absensi-form">
+            <label for="absenType">Pilih Jenis Absensi</label>
+            <select id="absenType" name="absenType">
+                <option value="kantor">Kerja dari Kantor (WFO)</option>
+                <option value="wfh">Kerja dari Rumah (WFH)</option>
+            </select>
+            <button type="submit">Submit Absensi</button>
+        </form>
+    </div>
+    <div class="footer-bottom">
+        <p>PT. HORESTCO<br>
+            Jalan Mantingan, Desa Langon RT 12 RW 05, Kecamatan Tahunan, Kabupaten Jepara, Jawa Tengah, 59425, Indonesia<br>
+            +628551069988<br>
+            export@horestco.com</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/presencing.js"></script>
+    <script>
+  
+    
+
+        document.addEventListener('contextmenu', function(e) {
+          e.preventDefault();
+        });
+        
+        
+        document.addEventListener('keydown', function(e) {
+          
+          if (e.keyCode === 123 || 
+              (e.ctrlKey && e.shiftKey && e.keyCode === 73) || 
+              (e.ctrlKey && e.keyCode === 85) ||
+              (e.ctrlKey && e.shiftKey && e.keyCode === 67)) { 
+            e.preventDefault();
+          }
+        });
+          </script>
+</body>
+</html>
